@@ -9,6 +9,7 @@ import javax.swing.*;
 public class GUILogin implements ActionListener {
     JDBC jdbc = new JDBC();
     GUIRegister guiRegister;
+    GUIClient guiClient;
 
     JFrame frame;
     JPanel panel;
@@ -36,6 +37,8 @@ public class GUILogin implements ActionListener {
         loginButton.addActionListener(e ->
         {
             if (jdbc.loginClient(mail.getText(), password.getText()) != null) {
+                guiClient = new GUIClient();
+                guiClient.GUI();
                 frame.dispose();
             }
             else {

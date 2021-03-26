@@ -9,6 +9,7 @@ import javax.swing.*;
 public class GUIRegister implements ActionListener {
     JDBC jdbc = new JDBC();
     GUILogin guiLogin;
+    GUIClient guiClient;
 
     JFrame frame;
     JPanel panel;
@@ -60,6 +61,8 @@ public class GUIRegister implements ActionListener {
         {
             if (name.getText().length() > 0 && lastName.getText().length() > 0 && mail.getText().length() > 0 && password.getText().length() > 0 && postalAddress.getText().length() > 0) {
                 jdbc.registerNewClient(name.getText(), lastName.getText(), mail.getText(), password.getText(), postalAddress.getText());
+                guiClient = new GUIClient();
+                guiClient.GUI();
                 frame.dispose();
             }
             else {
