@@ -4,16 +4,20 @@ import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.GroupLayout.Alignment;
 
 
 public class GUIRegister implements ActionListener {
     JDBC jdbc = new JDBC();
     GUILogin guiLogin;
     GUIClient guiClient;
+    Client loggedClient;
 
     JFrame frame;
     JPanel panel;
+    GroupLayout layout;
 
+    JLabel registerMessage;
     JLabel nameLabel;
     JLabel lastNameLabel;
     JLabel mailLabel;
@@ -33,10 +37,12 @@ public class GUIRegister implements ActionListener {
         frame = new JFrame();
         panel = new JPanel();
 
-        nameLabel = new JLabel("Prènom : ");
+        registerMessage = new JLabel("Fill in your information");
+
+        nameLabel = new JLabel("First Name : ");
         name = new JTextField(20);
 
-        lastNameLabel = new JLabel("Nom : ");
+        lastNameLabel = new JLabel("Last Name : ");
         lastName = new JTextField(20);
 
         mailLabel = new JLabel("E-Mail : ");
@@ -60,36 +66,61 @@ public class GUIRegister implements ActionListener {
         registerButton.addActionListener(e ->
         {
             if (name.getText().length() > 0 && lastName.getText().length() > 0 && mail.getText().length() > 0 && password.getText().length() > 0 && postalAddress.getText().length() > 0) {
-                jdbc.registerNewClient(name.getText(), lastName.getText(), mail.getText(), password.getText(), postalAddress.getText());
-                guiClient = new GUIClient();
+                loggedClient = jdbc.registerNewClient(name.getText(), lastName.getText(), mail.getText(), password.getText(), postalAddress.getText());
+                guiClient = new GUIClient(loggedClient);
                 guiClient.GUI();
                 frame.dispose();
             }
             else {
-                // Complete form
+                registerMessage.setText("Complete each text field in order to register");
             }
         });
 
-        panel.setBorder(BorderFactory.createEmptyBorder(50 , 50, 50, 100));
-        panel.setLayout(new GridLayout(6, 2));
+        panel.setBorder(BorderFactory.createEmptyBorder(50 , 50, 50, 50));
+        layout = new GroupLayout(panel);
+        panel.setLayout(layout);
 
-        panel.add(nameLabel);
-        panel.add(name);
+        // Turn on automatically adding gaps between components
+        layout.setAutoCreateGaps(true);
 
-        panel.add(lastNameLabel);
-        panel.add(lastName);
+        // Create a sequential group for the horizontal axis.
+        GroupLayout.SequentialGroup hGroup = layout.createSequentialGroup();
 
-        panel.add(postalAddressLabel);
-        panel.add(postalAddress);
+        // The sequential group in turn contains two parallel groups.
+        // One parallel group contains the labels, the other the text fields.
+        // Putting the labels in a parallel group along the horizontal axis
+        // positions them at the same x location.
+        //
+        // Variable indentation is used to reinforce the level of grouping.
+        hGroup.addGroup(layout.createParallelGroup().
+                        addComponent(registerMessage).addComponent(nameLabel).addComponent(lastNameLabel).addComponent(postalAddressLabel).addComponent(mailLabel).addComponent(pwdLabel).addComponent(loginButton));
+        hGroup.addGroup(layout.createParallelGroup().
+                        addComponent(name).addComponent(lastName).addComponent(postalAddress).addComponent(mail).addComponent(password).addComponent(registerButton));
+        layout.setHorizontalGroup(hGroup);
 
-        panel.add(mailLabel);
-        panel.add(mail);
+        // Create a sequential group for the vertical axis.
+        GroupLayout.SequentialGroup vGroup = layout.createSequentialGroup();
 
-        panel.add(pwdLabel);
-        panel.add(password);
-
-        panel.add(registerButton);
-        panel.add(loginButton);
+        // The sequential group contains two parallel groups that align
+        // the contents along the baseline. The first parallel group contains
+        // the first label and text field, and the second parallel group contains
+        // the second label and text field. By using a sequential group
+        // the labels and text fields are positioned vertically after one another.
+        vGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE).
+                        addComponent(registerMessage));
+        vGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE).
+                        addComponent(nameLabel).addComponent(name));
+        vGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE).
+                        addComponent(lastNameLabel).addComponent(lastName));
+        vGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE).
+                        addComponent(postalAddressLabel).addComponent(postalAddress));
+        vGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE).
+                        addComponent(mailLabel).addComponent(mail));
+        vGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE).
+                        addComponent(pwdLabel).addComponent(password));
+        vGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE).
+                        addComponent(loginButton).addComponent(registerButton));
+        layout.setVerticalGroup(vGroup);
 
         frame.add(panel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

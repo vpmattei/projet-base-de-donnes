@@ -18,7 +18,7 @@ public class JDBC {
 		
 		GUILogin guiClient = new GUILogin();
 		guiClient.GUI();
-		
+
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			con = DriverManager.getConnection(databaseUrl, databaseUsername, databasePassword);
@@ -40,7 +40,7 @@ public class JDBC {
 		}
 	}
 
-	public void registerNewClient(String name, String lastName, String mail, String pwd, String postalAdr) {
+	public Client registerNewClient(String name, String lastName, String mail, String password, String postalAdr) {
 		try {
 			String sql = 	"INSERT INTO client (prenom, nom, adr_mail, mdp, adr_postale) "
 						 +	"VALUES (?, ?, ?, ?, ?) ";
@@ -50,15 +50,17 @@ public class JDBC {
 			ps.setString(1, name);
 			ps.setString(2, lastName);
 			ps.setString(3, mail);
-			ps.setString(4, pwd);
+			ps.setString(4, password);
 			ps.setString(5, postalAdr);
 	
 			ps.executeUpdate();
 
-			//loggedClient = new Client()
+			loggedClient = loginClient(mail, password);
+			return loggedClient;
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
+			return null;
 		}
 	}
 
@@ -84,12 +86,16 @@ public class JDBC {
 										  result.getString("mdp"), 
 										  result.getString("adr_postale"));
 			}
-
+			System.out.println("Client ID : " + loggedClient.ID());
 			return loggedClient;
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public Client getLoggedClient() {
+		return loggedClient;
 	}
 }
